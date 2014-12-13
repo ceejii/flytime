@@ -1,0 +1,10 @@
+﻿@{
+    ViewBag.Title = "About";
+}
+<h2>@ViewBag.Title</h2>
+@*<h3>@ViewBag.Message</h3>*@
+
+<p>This service uses yr.no to parse the flyable hours within the next 48 hours.</p>
+<p>Some locations that yr.no forecast have forecasts for every hour, other locations have forcast for several hours. Each forecasted block of one or more hours is called a period here at Fly time.</p>
+<p>Flyable hours requires sunlight at some time during the period and no precipitation (rain/snow). You may also choose to limit what makes an hour flyable by fog, windspeed and temperature. Fly Time now also understands the concept of <a href="http://en.wikipedia.org/wiki/Midnight_sun">Polar Day (Midnight sun)</a> and <a href="http://en.wikipedia.org/wiki/Polar_night">Polar Night</a> so you get proper forecasts within the polar circles as well.</p>
+<p>The weather data from <a href="http://www.yr.no">yr.no</a> is cached on the server for 10 minutes to comply with the terms and conditions of yr.no weather data.</p>

@@ -1,0 +1,30 @@
+﻿@{
+    ViewBag.Title = "Flyable Hours";
+}
+
+<div class="jumbotron">
+    <h1>Fly time</h1>
+    <p class="lead">Fly time is a tool to estimate flyable hours based on weather forecasts for locations.</p>
+</div>
+
+<div class="row">
+    Paste or type a link to a forecast overview page from the web-version of <a href="http://www.yr.no">yr.no</a> 
+    @using (Html.BeginForm())
+    {
+        @Html.Label("URL ");<text> </text>
+        @Html.TextBox("URL", null, new { @style = "width: 400px; max-width: 400px;" });
+        <text>For example: <a href="http://www.yr.no/place/Sweden/Stockholm/Västberga/">http://www.yr.no/place/Sweden/Stockholm/Västberga/</a> </text>  <br/>
+        @Html.Label("Max windspeed (meter/sec) ");<text> </text>
+        @Html.TextBox("windspeed","4.0");
+       <text>For example: 4.0 or just 4</text>   <br />
+        @Html.Label("Min temperature (Celsius) ");<text> </text>
+        @Html.TextBox("minTemp","-5");
+        <text>For example: 4.0 or just 4</text>   <br />
+        @Html.Label("Include foggy periods ");<text> </text>
+        @Html.CheckBox("includeFog", true);       <br />
+        <button type="submit">Submit</button>
+    }
+    <p>
+        <pre>@ViewBag.Result</pre>
+    </p>
+</div>

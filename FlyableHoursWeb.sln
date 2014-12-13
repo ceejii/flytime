@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlyableHoursWeb", "FlyableHoursWeb\FlyableHoursWeb.csproj", "{1F27A0A8-E8C0-4B3C-A77C-3FE804BD156F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PublishScripts", "PublishScripts", "{BE57D2C2-90AF-4498-BD11-486CCEF292EA}"
+	ProjectSection(SolutionItems) = preProject
+		PublishScripts\AzureWebsitePublishModule.psm1 = PublishScripts\AzureWebsitePublishModule.psm1
+		PublishScripts\Publish-WebApplicationWebsite.ps1 = PublishScripts\Publish-WebApplicationWebsite.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configurations", "Configurations", "{4AFEF118-0F4F-4775-810B-E0FBC69ADF53}"
+	ProjectSection(SolutionItems) = preProject
+		PublishScripts\Configurations\FlyableHoursWeb-WAWS-dev.json = PublishScripts\Configurations\FlyableHoursWeb-WAWS-dev.json
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlyableHours", "YrXmlParser\FlyableHours.csproj", "{376321D8-8854-41F1-AD1E-0222EBCC88F4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug (Rotebro)|Any CPU = Debug (Rotebro)|Any CPU
+		Debug(RC Hotel, Corfu)|Any CPU = Debug(RC Hotel, Corfu)|Any CPU
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1F27A0A8-E8C0-4B3C-A77C-3FE804BD156F}.Debug (Rotebro)|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F27A0A8-E8C0-4B3C-A77C-3FE804BD156F}.Debug (Rotebro)|Any CPU.Build.0 = Debug|Any CPU
+		{1F27A0A8-E8C0-4B3C-A77C-3FE804BD156F}.Debug(RC Hotel, Corfu)|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F27A0A8-E8C0-4B3C-A77C-3FE804BD156F}.Debug(RC Hotel, Corfu)|Any CPU.Build.0 = Debug|Any CPU
+		{1F27A0A8-E8C0-4B3C-A77C-3FE804BD156F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F27A0A8-E8C0-4B3C-A77C-3FE804BD156F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F27A0A8-E8C0-4B3C-A77C-3FE804BD156F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F27A0A8-E8C0-4B3C-A77C-3FE804BD156F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{376321D8-8854-41F1-AD1E-0222EBCC88F4}.Debug (Rotebro)|Any CPU.ActiveCfg = Debug (Rotebro)|Any CPU
+		{376321D8-8854-41F1-AD1E-0222EBCC88F4}.Debug (Rotebro)|Any CPU.Build.0 = Debug (Rotebro)|Any CPU
+		{376321D8-8854-41F1-AD1E-0222EBCC88F4}.Debug(RC Hotel, Corfu)|Any CPU.ActiveCfg = Debug(RC Hotel, Corfu)|Any CPU
+		{376321D8-8854-41F1-AD1E-0222EBCC88F4}.Debug(RC Hotel, Corfu)|Any CPU.Build.0 = Debug(RC Hotel, Corfu)|Any CPU
+		{376321D8-8854-41F1-AD1E-0222EBCC88F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{376321D8-8854-41F1-AD1E-0222EBCC88F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{376321D8-8854-41F1-AD1E-0222EBCC88F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{376321D8-8854-41F1-AD1E-0222EBCC88F4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4AFEF118-0F4F-4775-810B-E0FBC69ADF53} = {BE57D2C2-90AF-4498-BD11-486CCEF292EA}
+	EndGlobalSection
+EndGlobal
