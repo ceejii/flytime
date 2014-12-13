@@ -26,7 +26,7 @@ namespace FlyableHours
         static void Main(string[] args)
         {
             var parser = new YrXmlParser(args[0]);
-            //parser.notify(parser.findFlyableHours());
+            parser.notify(parser.findFlyableHours());
             Console.WriteLine(parser.findFlyableHours());
             Console.WriteLine(parser.findFlyableHours());
             Console.ReadKey();
