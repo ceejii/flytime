@@ -25,9 +25,6 @@ namespace FlyableHoursWeb.Controllers
             Bergshamra.FlyingSiteInfoUrl = "http://hem.bredband.net/k_bergenfeldt/slopes/bergshamra/bergshamra.html";
             Bergshamra.PreferredWindDirectionMin = 200;
             Bergshamra.PreferredWindDirectionMax = 225;
-            parser.Url = Bergshamra.ForecastUrl;
-            parser.MinWindDirection = Bergshamra.PreferredWindDirectionMin;
-            parser.MaxWindDirection = Bergshamra.PreferredWindDirectionMax;
             parser.findFlyableHours(Bergshamra, out Bergshamra);
             slopes.Add(Bergshamra);
 
@@ -38,9 +35,6 @@ namespace FlyableHoursWeb.Controllers
             Rotsunda.FlyingSiteInfoUrl = "http://hem.bredband.net/k_bergenfeldt/slopes/rotsunda/rotsunda.html";
             Rotsunda.PreferredWindDirectionMin = 155;
             Rotsunda.PreferredWindDirectionMax = 205;
-            parser.Url = Rotsunda.ForecastUrl;
-            parser.MinWindDirection = Rotsunda.PreferredWindDirectionMin;
-            parser.MaxWindDirection = Rotsunda.PreferredWindDirectionMax;
             parser.findFlyableHours(Rotsunda, out Rotsunda);
             slopes.Add(Rotsunda);
 
@@ -51,11 +45,22 @@ namespace FlyableHoursWeb.Controllers
             UpplandsVäsby.FlyingSiteInfoUrl = "http://hem.bredband.net/k_bergenfeldt/slopes/upplandsvasby/uppl_vasby.html";
             UpplandsVäsby.PreferredWindDirectionMin = 65;
             UpplandsVäsby.PreferredWindDirectionMax = 160;
-            parser.Url = UpplandsVäsby.ForecastUrl;
-            parser.MinWindDirection = UpplandsVäsby.PreferredWindDirectionMin;
-            parser.MaxWindDirection = UpplandsVäsby.PreferredWindDirectionMax;
             parser.findFlyableHours(UpplandsVäsby, out UpplandsVäsby);
             slopes.Add(UpplandsVäsby);
+
+            var Väsjöbacken = new FlyingSite();
+            Väsjöbacken.FlyingSiteName = "Väsjöbacken";
+            Väsjöbacken.ForecastLocationName = "Väsjöbacken";
+            Väsjöbacken.ForecastUrl = "http://www.yr.no/place/Sweden/Stockholm/Väsjöbacken/";
+            Väsjöbacken.FlyingSiteInfoUrl = "http://hem.bredband.net/k_bergenfeldt/slopes/vasjobacken/vasjobacken.html";
+            Väsjöbacken.PreferredWindDirectionMin = 315;
+            Väsjöbacken.PreferredWindDirectionMax = 360;
+            parser.findFlyableHours(Väsjöbacken, out Väsjöbacken);
+            slopes.Add(Väsjöbacken);
+
+
+        
+
 
             return View(slopes);
         }
