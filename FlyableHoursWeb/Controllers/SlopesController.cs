@@ -13,11 +13,11 @@ namespace FlyableHoursWeb.Controllers
         // GET: Slopes
         public ActionResult Index()
         {
-            var slopes = new List<FlyingSite>();
             YrXmlParser parser = new YrXmlParser("http://www.yr.no/place/Sweden/Stockholm/V%C3%A4stberga/");
             parser.MaxWindSpeed = 20.7f;
             parser.MinTemperature = -20;
 
+            var slopes = new List<FlyingSite>();
             var Bergshamra = new FlyingSite();
             Bergshamra.FlyingSiteName = "Bergshamra, Solna";
             Bergshamra.ForecastLocationName = "Bergshamra, Solna";

@@ -62,6 +62,7 @@ namespace FlyableHours
             {
                 this.Url = site.ForecastUrl;
             }
+            this.Url = CleanupUrl(this.Url);
 #region Cache
             var cacheResult = new StringBuilder();
             CleanupCache(cacheResult);
@@ -307,6 +308,24 @@ namespace FlyableHours
             }
             site.DebugInfo += "Parsing finished.";
             return;
+        }
+
+        private string CleanupUrl(string urlToClean)
+        {
+            urlToClean = urlToClean.Trim();
+            if (urlToClean.StartsWith("www.yr.no"))
+            {
+                urlToClean = "http://" + urlToClean;
+            }
+            if (urlToClean.StartsWith("yr.no"))
+            {
+                urlToClean = "http://www." + urlToClean;
+            }
+            if (!urlToClean.EndsWith("/"))
+            {
+                urlToClean = urlToClean + "/";
+            }
+            return urlToClean;
         }
 
         private void CleanupCache(StringBuilder result)
