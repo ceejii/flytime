@@ -60,13 +60,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\FlyingSite.cs" />
+    <Compile Include="Data\ForecastPeriod.cs" />
     <Compile Include="GmailMailService.cs" />
     <Compile Include="XmlSnapshot.cs" />
     <Compile Include="YrXmlParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App - CJ private.config">
+    <None Include="App - private.config">
       <SubType>Designer</SubType>
     </None>
     <None Include="App.config">

@@ -1,4 +1,5 @@
 ﻿using FlyableHours;
+using FlyableHours.Data;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -36,10 +37,12 @@ namespace FlyableHoursWeb.Controllers
             catch (Exception)
             {
                 //throw;
+                return View();
             }
-            String result = parser.findFlyableHours();
-            Console.WriteLine(result);
-            ViewBag.Result = result;
+            var site = new FlyingSite();
+            parser.findFlyableHours(site, out site);
+            Console.WriteLine(site.TextForecast);
+            ViewBag.Result = site.TextForecast;// +"\r\n" + site.DebugInfo;
             return View();
         }
 

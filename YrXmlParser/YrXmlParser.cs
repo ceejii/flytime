@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Globalization;
 using System.Configuration;
+using FlyableHours.Data;
 
 namespace FlyableHours
 {
@@ -15,7 +16,7 @@ namespace FlyableHours
         public String XmlFileName { get; set; }
         private static Dictionary<String,XmlSnapshot> xmlCache = new Dictionary<String,XmlSnapshot>();
         private TimeSpan CacheTime = new TimeSpan(0, -10, 0);
-        private bool DEBUG = false;
+        private bool DEBUG = true;
 
         public bool IncludeFoggyPeriods { get; set; }
         public float MaxWindSpeed { get; set; }
@@ -26,9 +27,9 @@ namespace FlyableHours
         static void Main(string[] args)
         {
             var parser = new YrXmlParser(args[0]);
-            parser.notify(parser.findFlyableHours());
-            Console.WriteLine(parser.findFlyableHours());
-            Console.WriteLine(parser.findFlyableHours());
+            var site = new FlyingSite();
+            parser.findFlyableHours(site, out site);
+            parser.notify(site.TextForecast);
             Console.ReadKey();
         }
     
@@ -44,9 +45,24 @@ namespace FlyableHours
             this.IncludeFoggyPeriods = bool.Parse(ConfigurationManager.AppSettings["includeFoggyPeriods"]);
         }
 
-        public string findFlyableHours()
+        public void findFlyableHours(FlyingSite inputSite, out FlyingSite site)
         {
-            int flyableHours = 0;
+            if (inputSite == null) 
+            { 
+                site = new FlyingSite();
+            }
+            else
+            {
+                site = inputSite;
+                this.MinWindDirection = site.PreferredWindDirectionMin;
+                this.MaxWindDirection = site.PreferredWindDirectionMax;
+            }
+            site.DebugInfo = "DEBUG INFO\r\n";
+            if (site.ForecastUrl != null)
+            {
+                this.Url = site.ForecastUrl;
+            }
+#region Cache
             var cacheResult = new StringBuilder();
             CleanupCache(cacheResult);
             XmlDocument xmlDoc = new XmlDocument();
@@ -69,13 +85,16 @@ namespace FlyableHours
                 }
                 catch (Exception e)
                 {
-                    return "Something went wrong getting the xml forecast. Url used: " + Url + XmlFileName /*+ " " + e.Message + " " + e.Source + " " + e.StackTrace*/;
+                    site.DebugInfo += "Something went wrong getting the xml forecast. Url used: " + Url + XmlFileName /*+ " " + e.Message + " " + e.Source + " " + e.StackTrace*/;
+                    return;
                     //throw;
                 }
             }
+            site.DebugInfo += "Url:" + Url + "\r\n";
+            site.DebugInfo += cacheResult + "\r\n";
+#endregion Cache
 
 #region Location
-            StringBuilder output = new StringBuilder();
             XmlNodeList location = xmlDoc.GetElementsByTagName("location");
             String place = "";
             String country = "";
@@ -83,19 +102,19 @@ namespace FlyableHours
             {
                 XmlNodeList locationChildren = location[0].ChildNodes;
                 foreach (XmlNode child in locationChildren)
-	                {
-		                 if(child.Name == "name") {
-                             place = child.InnerText;
-                         }
-		                 if(child.Name == "country") {
-                             country = child.InnerText;
-                         }
-	                }
-                //output.AppendLine("Forecasted flying hours for: " + place + ", " + country);
+	            {
+		            if(child.Name == "name") {
+                        place = child.InnerText;
+                    }
+		            if(child.Name == "country") {
+                        country = child.InnerText;
+                    }
+	            }
+                site.ForecastLocationName = place + ", " + country;
             }
             else
             {
-                output.AppendLine("Unexpected xml structure for location.");
+                site.DebugInfo += "Unexpected xml structure for location.";
             }
 #endregion Location
 
@@ -106,11 +125,11 @@ namespace FlyableHours
             {
                 String luString = lastUpdate[0].InnerText;
                 lastUpdateTime = ParseYrDateString(luString);
-                //output.AppendLine("Forecast as of: " + lastUpdateTime.ToString());
+                site.LastUpdateTime = lastUpdateTime;
             }
             else
             {
-                output.AppendLine("Unexpected xml structure for last update.");
+                site.DebugInfo += "Unexpected xml structure for last update.";
             }
 #endregion Last update
 
@@ -121,13 +140,13 @@ namespace FlyableHours
             {
                 String nuString = nextUpdate[0].InnerText;
                 nextUpdateTime = ParseYrDateString(nuString);
-                //output.AppendLine("Next forecast expected at: " + nextUpdateTime.ToString());
+                site.NextUpdateTime = nextUpdateTime;
             }
             else
             {
-                output.AppendLine("Unexpected xml structure for next update.");
+                site.DebugInfo += "Unexpected xml structure for next update." + "\r\n";
             }
-            output.AppendLine("Forecast as of " + lastUpdateTime.ToString() + " for " + place + ", " + country + ". Next forecast at " + nextUpdateTime);
+            site.TextForecast += "Forecast as of " + lastUpdateTime.ToString() + " for " + place + ", " + country + ". Next forecast at " + nextUpdateTime + "\r\n";
 #endregion Next update
 
 #region Sun
@@ -140,25 +159,29 @@ namespace FlyableHours
             if (polarNight) 
             { 
                 //Do nothing, no sun hours to parse.
-                output.AppendLine("Polar Night at this location. No periods available.");
+                site.TextForecast += "Polar Night at this location. No periods available.\r\n";
             } else if (polarDay){
                 //Do nothing. All hours parseable.
-                output.AppendLine("Polar Day at this location. All periods available.");
+                site.TextForecast += "Polar Day at this location. All periods available.\r\n";
             }
             else if (sun.Count == 1)
             {
                 sunRise = ParseYrDateString(getAttributeValue(sun[0], "rise"));
                 sunSet = ParseYrDateString(getAttributeValue(sun[0], "set"));
-                output.AppendLine("Sunrise: " + sunRise + " Sunset: " + sunSet);
+                site.SunRise = sunRise;
+                site.SunSet = sunSet;
+                site.TextForecast += "Sunrise: " + sunRise + " Sunset: " + sunSet + "\r\n";
             }
             else
             {
-                output.AppendLine("Unexpected xml structure for sun set/rise.");
+                site.DebugInfo += "Unexpected xml structure for sun set/rise.\r\n";
             }
 #endregion Sun
 
 #region Hours
+            int flyableHours = 0;
             XmlNodeList periods = xmlDoc.GetElementsByTagName("time");
+            site.ForecastPeriods = new List<ForecastPeriod>();
             foreach (XmlNode period in periods)
             {
                 XmlNodeList hourElements = period.ChildNodes;
@@ -169,25 +192,30 @@ namespace FlyableHours
                 float temperature = 200.0f;
                 String symbolString = "";
                 bool fog = false;
-
+                var forecastPeriod = new ForecastPeriod();
                 foreach (XmlNode hourChild in hourElements)
                 {
                     if (hourChild.Name == "precipitation")
                     {
                         precipitation = float.Parse(getAttributeValue(hourChild,"value"), CultureInfo.InvariantCulture);
+                        forecastPeriod.Precipitation = precipitation;
                     }
                     if (hourChild.Name == "windSpeed")
                     {
                         windSpeed = float.Parse(getAttributeValue(hourChild, "mps"), CultureInfo.InvariantCulture);
+                        forecastPeriod.ForecastWindSpeed = windSpeed;
                     }
                     if (hourChild.Name == "windDirection")
                     {
                         windDirection = float.Parse(getAttributeValue(hourChild, "deg"), CultureInfo.InvariantCulture);
+                        forecastPeriod.ForecastWindDirectionDeg = windDirection;
                         windDirectionString = getAttributeValue(hourChild, "code");
+                        forecastPeriod.ForecastWindDirectionString = windDirectionString;
                     }
                     if (hourChild.Name == "temperature")
                     {
                         temperature = float.Parse(getAttributeValue(hourChild,"value"), CultureInfo.InvariantCulture);
+                        forecastPeriod.ForecastTemperature = temperature;
                     }
                     if (hourChild.Name == "symbol")
                     {
@@ -214,8 +242,8 @@ namespace FlyableHours
                                 break;
                         }
                     }
+                    forecastPeriod.Forecast = symbolString;
                 }
-                //output.AppendLine("min " + MinWindDirection + " max " + MaxWindDirection + " value " + windDirection);
                 if (precipitation == 0.0f 
                     && windSpeed <= MaxWindSpeed
                     && temperature >= MinTemperature
@@ -227,14 +255,17 @@ namespace FlyableHours
                     && windDirection >= MinWindDirection
                     )
                 {
-                    //TODO: Parse into typed object instead.
                     var from = ParseYrDateString(getAttributeValue(period, "from"));
+                    forecastPeriod.PeriodStart = from;
                     var to = ParseYrDateString(getAttributeValue(period, "to"));
-                    output.AppendLine(from.DayOfWeek + " " + from.ToString("d MMM HH:mm" + "-") + to.ToString("HH:mm") + " rain:" + precipitation + " windspeed:" + windSpeed + " winddirection: " + windDirectionString + "(" + Math.Round(windDirection,0) + ") temperature:" + temperature + " " + symbolString);
+                    forecastPeriod.PeriodEnd = to;
+                    site.TextForecast += from.DayOfWeek + " " + from.ToString("d MMM HH:mm" + "-") + to.ToString("HH:mm") + " rain:" + precipitation + " windspeed:" + windSpeed + " winddirection: " + windDirectionString + "(" + Math.Round(windDirection,0) + ") temperature:" + temperature + " " + symbolString + "\r\n";
+                    site.ForecastPeriods.Add(forecastPeriod);
+                    site.DebugInfo += forecastPeriod.PeriodStart.ToString("d MMM HH:mm" + "-") + forecastPeriod.PeriodEnd.ToString("HH:mm") + "\r\n";
                     flyableHours++;
                 }
             }
-            output.AppendLine("Flyable periods: " + flyableHours);
+            site.DebugInfo += "Flyable periods " + site.ForecastPeriods.Count + "\r\n";
 
 #endregion
 
@@ -247,36 +278,35 @@ namespace FlyableHours
                 {
                     if (child.Name == "link")
                     {
-                        output.AppendLine();
-                        output.AppendLine(getAttributeValue(child, "text"));
-                        output.AppendLine(getAttributeValue(child, "url"));
+                        site.Credits = getAttributeValue(child, "text") + "\r\n" + getAttributeValue(child, "url");
+                        site.TextForecast += "\r\n" + site.Credits + "\r\n";
                     }
                 }
             }
             else
             {
-                output.AppendLine("Unexpected xml structure for credit.");
+                site.DebugInfo += "Unexpected xml structure for credit.";
             }
 #endregion Credit
             if (DEBUG)
             {
-                output.AppendLine("");
-                output.AppendLine("- - - Cache info - - -");
-                output.AppendLine("");
-                output.Append(cacheResult);
-                output.AppendLine("");
-                output.AppendLine("- - - Parameter info - - -");
-                output.AppendLine("");
-                output.AppendLine("Min temp: " + this.MinTemperature);
-                output.AppendLine("Max wind speed: " + this.MaxWindSpeed);
-                output.AppendLine("Min wind direction: " + this.MinWindDirection);
-                output.AppendLine("Max wind direction: " + this.MaxWindDirection);
-                output.AppendLine("Include fog: " + this.IncludeFoggyPeriods);
-                output.AppendLine("Url: " + this.Url);
-                output.AppendLine("Xml file: " + this.XmlFileName);
+                site.DebugInfo += "\r\n";
+                site.DebugInfo += "- - - Cache info - - -";
+                site.DebugInfo += "\r\n";
+                site.DebugInfo += cacheResult + "\r\n";
+                site.DebugInfo += "\r\n";
+                site.DebugInfo += "- - - Parameter info - - -\r\n";
+                site.DebugInfo += "\r\n";
+                site.DebugInfo += "Min temp: " + this.MinTemperature + "\r\n";
+                site.DebugInfo += "Max wind speed: " + this.MaxWindSpeed + "\r\n";
+                site.DebugInfo += "Min wind direction: " + this.MinWindDirection + "\r\n";
+                site.DebugInfo += "Max wind direction: " + this.MaxWindDirection + "\r\n";
+                site.DebugInfo += "Include fog: " + this.IncludeFoggyPeriods + "\r\n";
+                site.DebugInfo += "Url: " + this.Url + "\r\n";
+                site.DebugInfo += "Xml file: " + this.XmlFileName + "\r\n";
             }
-
-            return output.ToString();
+            site.DebugInfo += "Parsing finished.";
+            return;
         }
 
         private void CleanupCache(StringBuilder result)
@@ -292,7 +322,7 @@ namespace FlyableHours
 
         private void LoadPathToXmlDocument(StringBuilder output, XmlDocument xmlDoc)
         {
-            output.AppendLine("Getting xml from yr.");
+            output.AppendLine("Getting xml from yr." + Url + XmlFileName);
             xmlDoc.Load(Url + XmlFileName); // Load the XML document from the specified file
             output.AppendLine("Adding retrieved xml to cache.");
             xmlCache.Add(Url, new XmlSnapshot(DateTime.Now, xmlDoc));
@@ -301,8 +331,8 @@ namespace FlyableHours
         public void notify(string output)
         {
             //TODO: Separate notifications from parser
-            sendEmail(output);
             logToConsole(output);
+            sendEmail(output);
         }
 
         private void logToConsole(string output)

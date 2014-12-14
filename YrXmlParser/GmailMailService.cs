@@ -21,9 +21,7 @@ namespace FlyableHours
         {
             var fromAddress = new MailAddress(ConfigurationManager.AppSettings["gmailFromAddress"], "Flyable Hours");
             var toAddress = new MailAddress(ConfigurationManager.AppSettings["mailToAddress"], "");
-            #region mail-password
             string gmailPassword = ConfigurationManager.AppSettings["gmailPassword"];
-            #endregion
             const string subject = "Flygtimmar!";
             NetworkCredential googleCreds = new NetworkCredential(fromAddress.Address, gmailPassword);
             var smtp = new SmtpClient
@@ -41,7 +39,15 @@ namespace FlyableHours
                 Body = body
             })
             {
-                smtp.Send(message);
+                try
+                {
+                    smtp.Send(message);
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Could not send result via gmail.");
+                    //throw;
+                }
             }
 
 

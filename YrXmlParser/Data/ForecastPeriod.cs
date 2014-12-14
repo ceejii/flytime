@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace FlyableHoursWeb.Models
+namespace FlyableHours.Data
 {
     public class ForecastPeriod
     {
@@ -13,8 +13,14 @@ namespace FlyableHoursWeb.Models
 
         public String Forecast { get; set; }
 
-        public String ForecastWindDirection { get; set; }
+        public String ForecastWindDirectionString { get; set; }
+
+        public float ForecastWindDirectionDeg { get; set; }
 
         public float ForecastWindSpeed { get; set; }
+
+        public float Precipitation { get; set; }
+
+        public float ForecastTemperature { get; set; }
     }
 }

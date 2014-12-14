@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace FlyableHoursWeb.Models
+namespace FlyableHours.Data
 {
     public class FlyingSite
     {
@@ -22,5 +22,23 @@ namespace FlyableHoursWeb.Models
         public int PreferredWindDirectionMax { get; set; }
 
         public string TextForecast { get; set; }
+
+        public string DebugInfo { get; set; }
+
+        public DateTime LastUpdateTime { get; set; }
+
+        public DateTime NextUpdateTime { get; set; }
+
+        public DateTime SunRise { get; set; }
+
+        public DateTime SunSet { get; set; }
+
+        public string Credits { get; set; }
+
+        public FlyingSite()
+        {
+            PreferredWindDirectionMin = 0;
+            PreferredWindDirectionMax = 360;
+        }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using FlyableHours;
-using FlyableHoursWeb.Models;
+using FlyableHours.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +15,8 @@ namespace FlyableHoursWeb.Controllers
         {
             var slopes = new List<FlyingSite>();
             YrXmlParser parser = new YrXmlParser("http://www.yr.no/place/Sweden/Stockholm/V%C3%A4stberga/");
-            parser.MaxWindSpeed = 15.0f;
+            parser.MaxWindSpeed = 20.7f;
+            parser.MinTemperature = -20;
 
             var Bergshamra = new FlyingSite();
             Bergshamra.FlyingSiteName = "Bergshamra, Solna";
@@ -27,7 +28,7 @@ namespace FlyableHoursWeb.Controllers
             parser.Url = Bergshamra.ForecastUrl;
             parser.MinWindDirection = Bergshamra.PreferredWindDirectionMin;
             parser.MaxWindDirection = Bergshamra.PreferredWindDirectionMax;
-            Bergshamra.TextForecast = parser.findFlyableHours();
+            parser.findFlyableHours(Bergshamra, out Bergshamra);
             slopes.Add(Bergshamra);
 
             var Rotsunda = new FlyingSite();
@@ -40,7 +41,7 @@ namespace FlyableHoursWeb.Controllers
             parser.Url = Rotsunda.ForecastUrl;
             parser.MinWindDirection = Rotsunda.PreferredWindDirectionMin;
             parser.MaxWindDirection = Rotsunda.PreferredWindDirectionMax;
-            Rotsunda.TextForecast = parser.findFlyableHours();
+            parser.findFlyableHours(Rotsunda, out Rotsunda);
             slopes.Add(Rotsunda);
 
             var UpplandsVäsby = new FlyingSite();
@@ -53,27 +54,9 @@ namespace FlyableHoursWeb.Controllers
             parser.Url = UpplandsVäsby.ForecastUrl;
             parser.MinWindDirection = UpplandsVäsby.PreferredWindDirectionMin;
             parser.MaxWindDirection = UpplandsVäsby.PreferredWindDirectionMax;
-            UpplandsVäsby.TextForecast = parser.findFlyableHours();
+            parser.findFlyableHours(UpplandsVäsby, out UpplandsVäsby);
             slopes.Add(UpplandsVäsby);
 
-            //for (int i = 0; i < 10; i++)
-            //{
-            //  var slope = new Slope();
-            //    slope.LocationName = "Location " + i;
-            //    slope.PreferredWindDirectionMin = i*10;
-            //    slope.PreferredWindDirectionMax = i*10+45;
-            //    slope.SlopeName = "Slope " + i;
-            //    slope.Url = "http://location" + i + ".cj.se";
-            //    slope.ForecastPeriods = new List<ForecastPeriod>();
-            //    for (int j = 1; j < 49; j++)
-            //    {
-            //        var period = new ForecastPeriod();
-            //        period.ForecastWindSpeed = j;
-            //        period.ForecastWindDirection = Math.Round(j * 7.0, 1).ToString();
-            //        slope.ForecastPeriods.Add(period);
-            //    }
-            //    slopes.Add(slope);
-            //}
             return View(slopes);
         }
     }

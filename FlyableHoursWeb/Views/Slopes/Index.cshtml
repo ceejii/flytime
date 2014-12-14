@@ -1,32 +1,40 @@
-﻿@using FlyableHoursWeb.Models;
+﻿@using FlyableHours.Data;
 @{
     ViewBag.Title = "Slopes";
 }
 
     <h2>Slopes</h2>
 
-        <table border="1">
-            @*<tr>
-                <th>Slope</th>
-                <th>Forecast<br/>Location</th>
-            </tr>*@
             @foreach (var Slope in Model)
             {
                 <p>
                     <a href="@Slope.FlyingSiteInfoUrl">@Slope.FlyingSiteName</a>, forecast for <a href="@Slope.ForecastUrl@Html.Raw("hour_by_hour.html")">@Slope.ForecastLocationName</a> with winddirection: @Slope.PreferredWindDirectionMin - @Slope.PreferredWindDirectionMax degrees<br/>
-                    <pre>@Slope.TextForecast</pre>
+                    @*<pre>@Slope.TextForecast</pre>*@
                 </p>
-                @*foreach (var period in Slope.ForecastPeriods)
-                {*@
-                    @*<td bgcolor=@(period.ForecastWindDirection<225&&period.ForecastWindDirection>135 ? "\"#FF0000\"" : "\"#00FF00\"")>@period.ForecastWindDirection/@period.ForecastWindSpeed</td>*@
-                @*
-                    <tr bgcolor="#@(Convert.ToDouble(period.ForecastWindDirection)>225.0 ? "FF0000" : "00FF00")">
-                        @period.ForecastWindDirection/@period.ForecastWindSpeed
-                    </tr>
-                }*@
+                    if (Slope.ForecastPeriods.Count > 0)
+                    {
+                        <table border="1">
+                            <tr>
+                                <th align="left">Time</th>
+                                <th>Wind speed</th>
+                                <th>Wind dir (degrees)</th>
+                                <th>Temp</th>
+                            </tr>
+                            @foreach (var period in Slope.ForecastPeriods) {
+                                <tr>
+                                    <td align="center">@period.PeriodStart.DayOfWeek@Html.Raw(" ")@period.PeriodStart.ToString("d MMM HH:mm" + "-")@period.PeriodEnd.ToString("HH:mm")</td>
+                                    <td align="center">@period.ForecastWindSpeed</td>
+                                    <td align="center">@period.ForecastWindDirectionString (@Math.Round(period.ForecastWindDirectionDeg,0))</td>
+                                    <td align="center">@period.ForecastTemperature</td>
+                                </tr>
+                            }
+                        </table>
+                    } else
+                    {
+                        <p>No flyable hours</p>
+                    }
+               <br/>
+                <pre>@Slope.Credits</pre>
+                <hr/>
             }
-        </table>
-        @*<p>
-            @Slope.LocationName;
-        </p>*@
 
