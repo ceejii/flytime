@@ -8,7 +8,8 @@
             @foreach (var Slope in Model)
             {
                 <p>
-                    <a href="@Slope.FlyingSiteInfoUrl">@Slope.FlyingSiteName</a>, forecast for <a href="@Slope.ForecastUrl@Html.Raw("hour_by_hour.html")">@Slope.ForecastLocationName</a> with winddirection: @Slope.PreferredWindDirectionMin - @Slope.PreferredWindDirectionMax degrees<br/>
+                    <h4><a href="@Slope.FlyingSiteInfoUrl">@Slope.FlyingSiteName</a></h4>
+                    Forecast for nearest location known to Yr.no - <a href="@Slope.ForecastUrl@Html.Raw("hour_by_hour.html")">@Slope.ForecastLocationName</a> with winddirection: @Slope.PreferredWindDirectionMin - @Slope.PreferredWindDirectionMax degrees<br/>
                     @*<pre>@Slope.TextForecast</pre>*@
                 </p>
                     if (Slope.ForecastPeriods.Count > 0)
