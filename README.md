@@ -5,7 +5,9 @@ Overview
 --------
 An application or web-service that parses hour by hour forecasts from weather service yr.no and uses user-options to determines what hours are flyable. It's intention is to find flyable hours for rc aircrafts but it can be used for other uses that you can think of.
 
-There is currently no binary release of Fly Time.
+There is currently no binary release of Fly Time, you'll have to build it yourself at this time.
+
+The web application is deployed at http://flytime.azurewebsites.net
 
 Technology
 ----------
@@ -18,3 +20,7 @@ The project FlyableHours/YrXmlParser is set to build a dll used by the web servi
 Web application
 ---------------
 The FlyableHoursWeb project is a MVC and ASP.NET web application. The start page has a search for a single location where you can also specify some parameters that makes a flyable hour for you. There is also a Slopes page where you can get flyable hours for several slopes on one page. This page also takes wind direction into consideration.
+
+Contributions
+-------------
+If you want to contribute a bug fix you are always welcome. If you want to add or change functionality please talk to me about it before doing a lot of work so we can be on the same page about it. You'll be credited appropriately when you contribute.
