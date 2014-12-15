@@ -19,6 +19,7 @@
                                 <th>Wind speed</th>
                                 <th>Wind dir (degrees)</th>
                                 <th>Temp</th>
+                                <th>Wind chill</th>
                             </tr>
                             @foreach (var period in Slope.ForecastPeriods) {
                                 <tr>
@@ -26,6 +27,7 @@
                                     <td align="center">@period.ForecastWindSpeed</td>
                                     <td align="center">@period.ForecastWindDirectionString (@Math.Round(period.ForecastWindDirectionDeg,0))</td>
                                     <td align="center">@period.ForecastTemperature</td>
+                                    <td align="center">@Math.Round(13.126665f + 0.6215f * period.ForecastTemperature - 13.924748f * Math.Pow(period.ForecastWindSpeed, 0.16f) + 0.4875195f * period.ForecastTemperature * Math.Pow(period.ForecastWindSpeed, 0.16f), 1)</td>
                                 </tr>
                             }
                         </table>
