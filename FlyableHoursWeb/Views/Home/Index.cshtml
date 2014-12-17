@@ -1,15 +1,19 @@
 ﻿@{
-    ViewBag.Title = "Flyable Hours";
+    if (ViewBag.Location != null && !ViewBag.Location.Equals("")) { 
+        ViewBag.Title = "FlyTime@" + ViewBag.Location;
+    } else {
+        ViewBag.Title = "FlyTime" + ViewBag.Location;
+    }
 }
 
 <div class="jumbotron">
-    <h1>Fly time</h1>
-    <p class="lead">Fly time is a tool to estimate flyable hours based on weather forecasts for locations.</p>
+    <h1>FlyTime</h1>
+    <p class="lead">FlyTime is a tool to estimate flyable hours based on weather forecasts for locations.</p>
 </div>
 
 <div class="row">
     Paste or type a link to a forecast overview page from the web-version of <a href="http://www.yr.no">yr.no</a> 
-    @using (Html.BeginForm())
+    @using (Html.BeginForm("Index", "Home", FormMethod.Get))
     {
         @Html.Label("URL ");<text> </text>
         @Html.TextBox("URL", null, new { @style = "width: 400px; max-width: 400px;" });
@@ -22,7 +26,7 @@
         <text>For example: 4.0 or just 4</text>   <br />
         @Html.Label("Include foggy periods ");<text> </text>
         @Html.CheckBox("includeFog", true);       <br />
-        <button type="submit">Submit</button>
+        <button type="submit" formmethod="get">Submit</button>
     }
     <p>
         <pre>@ViewBag.Result</pre>

@@ -16,8 +16,8 @@ namespace FlyableHoursWeb.Controllers
             return View();
         }
 
-        [HttpPost]
-        public ActionResult Index(string URL, string windspeed, string minTemp, bool includeFog)
+        [HttpGet]
+        public ActionResult Index(string URL = "", string windspeed = "5", string minTemp = "-5", bool includeFog=true)
         {
             Console.WriteLine("URL:" + URL);
             Console.WriteLine("Wind speed:" + windspeed);
@@ -41,6 +41,7 @@ namespace FlyableHoursWeb.Controllers
             }
             var site = new FlyingSite();
             parser.findFlyableHours(site, out site);
+            ViewBag.Location = site.ForecastLocationName;
             Console.WriteLine(site.TextForecast);
             ViewBag.Result = site.TextForecast;// +"\r\n" + site.DebugInfo;
             return View();
