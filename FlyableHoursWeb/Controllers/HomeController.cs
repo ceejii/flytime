@@ -13,7 +13,7 @@ namespace FlyableHoursWeb.Controllers
     {
         public ActionResult Index()
         {
-            return View();
+            return View(new List<FlyingSite>());
         }
 
         [HttpGet]
@@ -41,10 +41,8 @@ namespace FlyableHoursWeb.Controllers
             }
             var site = new FlyingSite();
             parser.findFlyableHours(site, out site);
-            ViewBag.Location = site.ForecastLocationName;
-            Console.WriteLine(site.TextForecast);
-            ViewBag.Result = site.TextForecast;// +"\r\n" + site.DebugInfo;
-            return View();
+            ViewBag.LocationName = site.ForecastLocationName;
+            return View(new List<FlyingSite>(){site});
         }
 
         public ActionResult About()

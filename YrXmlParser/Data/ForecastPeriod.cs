@@ -22,5 +22,7 @@ namespace FlyableHours.Data
         public float Precipitation { get; set; }
 
         public float ForecastTemperature { get; set; }
+
+        public string SymbolString { get; set; }
     }
 }

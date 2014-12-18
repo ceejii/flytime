@@ -33,12 +33,18 @@ namespace FlyableHours.Data
 
         public DateTime SunSet { get; set; }
 
-        public string Credits { get; set; }
+        public bool MidnightSun { get; set; }
+
+        public bool PolarNight { get; set; }
+
+        public string CreditText { get; set; }
 
         public FlyingSite()
         {
             PreferredWindDirectionMin = 0;
             PreferredWindDirectionMax = 360;
         }
+
+        public string CreditUrl { get; set; }
     }
 }

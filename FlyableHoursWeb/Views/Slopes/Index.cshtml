@@ -4,30 +4,31 @@
 }
 
     <h2>Slopes around Stockholm, Sweden</h2>
-
             @foreach (var Slope in Model)
             {
                 <p>
-                    <h4><a href="@Slope.FlyingSiteInfoUrl">@Slope.FlyingSiteName</a></h4>
+                    <h3><a href="@Slope.FlyingSiteInfoUrl">@Slope.FlyingSiteName</a></h3>
                     Forecast for nearest location known to Yr.no is <a href="@Slope.ForecastUrl@Html.Raw("hour_by_hour.html")">@Slope.ForecastLocationName</a> with winddirection @Slope.PreferredWindDirectionMin - @Slope.PreferredWindDirectionMax degrees<br/>
                 </p>
                     if (Slope.ForecastPeriods.Count > 0)
                     {
-                        <table border="1">
+                        <table border="0">
                             <tr>
-                                <th align="left">Time</th>
-                                <th>Wind speed</th>
-                                <th>Wind dir (degrees)</th>
-                                <th>Temp</th>
-                                <th>Wind chill</th>
+                                <th align="left"> Time&nbsp;</th>
+                                <th>&nbsp;Wind speed&nbsp;</th>
+                                <th>&nbsp;Wind dir (degr.)&nbsp;</th>
+                                <th>&nbsp;Temp&nbsp;</th>
+                                <th>&nbsp;Wind chill&nbsp;</th>
+                                <th>&nbsp;Forecast&nbsp;</th>
                             </tr>
                             @foreach (var period in Slope.ForecastPeriods) {
                                 <tr>
-                                    <td align="center">@period.PeriodStart.DayOfWeek@Html.Raw(" ")@period.PeriodStart.ToString("d MMM HH:mm" + "-")@period.PeriodEnd.ToString("HH:mm")</td>
+                                    <td align="left">@period.PeriodStart.DayOfWeek@Html.Raw(" ")@period.PeriodStart.ToString("d MMM HH:mm" + "-")@period.PeriodEnd.ToString("HH:mm")</td>
                                     <td align="center">@period.ForecastWindSpeed</td>
                                     <td align="center">@period.ForecastWindDirectionString (@Math.Round(period.ForecastWindDirectionDeg,0))</td>
                                     <td align="center">@period.ForecastTemperature</td>
                                     <td align="center">@Math.Round(13.126665f + 0.6215f * period.ForecastTemperature - 13.924748f * Math.Pow(period.ForecastWindSpeed, 0.16f) + 0.4875195f * period.ForecastTemperature * Math.Pow(period.ForecastWindSpeed, 0.16f), 1)</td>
+                                    <td align="center"><img src="http://symbol.yr.no/grafikk/sym/b30/@period.SymbolString@Html.Raw(".png")" alt="@period.Forecast" title="@period.Forecast"/></td>
                                 </tr>
                             }
                         </table>
@@ -36,7 +37,7 @@
                         <p>No flyable hours</p>
                     }
                <br/>
-                <pre>@Slope.Credits</pre>
-                <hr/>
+               <a href="@Slope.CreditUrl">@Slope.CreditText</a>
+               <hr/>
             }
 

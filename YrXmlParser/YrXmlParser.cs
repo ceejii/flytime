@@ -17,6 +17,7 @@ namespace FlyableHours
         private static Dictionary<String,XmlSnapshot> xmlCache = new Dictionary<String,XmlSnapshot>();
         private TimeSpan CacheTime = new TimeSpan(0, -10, 0);
         private bool DEBUG = true;
+        public int SymbolSize { get; set; }
 
         public bool IncludeFoggyPeriods { get; set; }
         public float MaxWindSpeed { get; set; }
@@ -43,6 +44,7 @@ namespace FlyableHours
             this.MinWindDirection = float.Parse(ConfigurationManager.AppSettings["flyableWindDirectionMin"]);
             this.MaxWindDirection = float.Parse(ConfigurationManager.AppSettings["flyableWindDirectionMax"]);
             this.IncludeFoggyPeriods = bool.Parse(ConfigurationManager.AppSettings["includeFoggyPeriods"]);
+            this.SymbolSize = 30; //30, 38, 48, 100, 200 pixels supported as of 2014.
         }
 
         public void findFlyableHours(FlyingSite inputSite, out FlyingSite site)
@@ -58,11 +60,12 @@ namespace FlyableHours
                 this.MaxWindDirection = site.PreferredWindDirectionMax;
             }
             site.DebugInfo = "DEBUG INFO\r\n";
-            if (site.ForecastUrl != null)
+            if (site.ForecastUrl != null && site.ForecastUrl.Length > 0)
             {
                 this.Url = site.ForecastUrl;
             }
             this.Url = CleanupUrl(this.Url);
+            site.ForecastUrl = this.Url;
 #region Cache
             var cacheResult = new StringBuilder();
             CleanupCache(cacheResult);
@@ -160,9 +163,11 @@ namespace FlyableHours
             if (polarNight) 
             { 
                 //Do nothing, no sun hours to parse.
+                site.PolarNight = true;
                 site.TextForecast += "Polar Night at this location. No periods available.\r\n";
             } else if (polarDay){
                 //Do nothing. All hours parseable.
+                site.MidnightSun = true;
                 site.TextForecast += "Polar Day at this location. All periods available.\r\n";
             }
             else if (sun.Count == 1)
@@ -191,7 +196,8 @@ namespace FlyableHours
                 float windDirection = 0.0f;
                 string windDirectionString = "";
                 float temperature = 200.0f;
-                String symbolString = "";
+                String symbolText = "";
+                String symbolString = "aa";
                 bool fog = false;
                 var forecastPeriod = new ForecastPeriod();
                 foreach (XmlNode hourChild in hourElements)
@@ -220,30 +226,36 @@ namespace FlyableHours
                     }
                     if (hourChild.Name == "symbol")
                     {
-                        int symbol = int.Parse(getAttributeValue(hourChild, "number"), CultureInfo.InvariantCulture);
+                        int symbol = int.Parse(getAttributeValue(hourChild, "numberEx"), CultureInfo.InvariantCulture);
                         switch (symbol)
                         {
                             case    1:
-                                symbolString = "sunny";
+                                symbolText = "sunny";
+                                symbolString = "01d";
                                 break;
                             case 2:
-                                symbolString = "fair";
+                                symbolText = "fair";
+                                symbolString = "02d";
                                 break;
                             case 3:
-                                symbolString = "partly cloudy";
+                                symbolText = "partly cloudy";
+                                symbolString = "03d";
                                 break;
                             case 4:
-                                symbolString = "cloudy";
+                                symbolText = "cloudy";
+                                symbolString = "04";
                                 break;
                             case 15:
-                                symbolString = "fog";
+                                symbolText = "fog";
+                                symbolString = "15";
                                 fog = true;
                                 break;
                             default:
                                 break;
                         }
                     }
-                    forecastPeriod.Forecast = symbolString;
+                    forecastPeriod.Forecast = symbolText;
+                    forecastPeriod.SymbolString = symbolString;
                 }
                 if (precipitation == 0.0f 
                     && windSpeed <= MaxWindSpeed
@@ -260,7 +272,7 @@ namespace FlyableHours
                     forecastPeriod.PeriodStart = from;
                     var to = ParseYrDateString(getAttributeValue(period, "to"));
                     forecastPeriod.PeriodEnd = to;
-                    site.TextForecast += from.DayOfWeek + " " + from.ToString("d MMM HH:mm" + "-") + to.ToString("HH:mm") + " rain:" + precipitation + " windspeed:" + windSpeed + " winddirection: " + windDirectionString + "(" + Math.Round(windDirection,0) + ") temperature:" + temperature + " " + symbolString + "\r\n";
+                    site.TextForecast += from.DayOfWeek + " " + from.ToString("d MMM HH:mm" + "-") + to.ToString("HH:mm") + " rain:" + precipitation + " windspeed:" + windSpeed + " winddirection: " + windDirectionString + "(" + Math.Round(windDirection,0) + ") temperature:" + temperature + " " + symbolText + "\r\n";
                     site.ForecastPeriods.Add(forecastPeriod);
                     site.DebugInfo += forecastPeriod.PeriodStart.ToString("d MMM HH:mm" + "-") + forecastPeriod.PeriodEnd.ToString("HH:mm") + "\r\n";
                     flyableHours++;
@@ -279,8 +291,9 @@ namespace FlyableHours
                 {
                     if (child.Name == "link")
                     {
-                        site.Credits = getAttributeValue(child, "text") + "\r\n" + getAttributeValue(child, "url");
-                        site.TextForecast += "\r\n" + site.Credits + "\r\n";
+                        site.CreditText = getAttributeValue(child, "text");
+                        site.CreditUrl = getAttributeValue(child, "url");
+                        site.TextForecast += "\r\n" + site.CreditText + "\r\n" + site.CreditUrl + "\r\n";
                     }
                 }
             }

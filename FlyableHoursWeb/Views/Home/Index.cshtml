@@ -1,8 +1,12 @@
-﻿@{
-    if (ViewBag.Location != null && !ViewBag.Location.Equals("")) { 
-        ViewBag.Title = "FlyTime@" + ViewBag.Location;
-    } else {
-        ViewBag.Title = "FlyTime" + ViewBag.Location;
+﻿@using FlyableHours.Data;
+@{
+    if (ViewBag.LocationName != null && !ViewBag.LocationName.Equals(""))
+    {
+        ViewBag.Title = "FlyTime@" + ViewBag.LocationName;
+    }
+    else
+    {
+        ViewBag.Title = "FlyTime" + ViewBag.LocationName;
     }
 }
 
@@ -28,7 +32,64 @@
         @Html.CheckBox("includeFog", true);       <br />
         <button type="submit" formmethod="get">Submit</button>
     }
-    <p>
-        <pre>@ViewBag.Result</pre>
-    </p>
+
+    @foreach (var Location in Model)
+    {
+        if (Location.ForecastPeriods != null)
+        {
+            <hr />
+            <p>
+                <h2>
+                    Forecast for <a href="@Location.ForecastUrl@Html.Raw("hour_by_hour.html")">@Location.ForecastLocationName</a>
+                </h2>
+            </p>
+        <p>
+            @{
+                String sunStatus = "";
+                if(Location.PolarNight){
+                    sunStatus = "Polar Night!";
+                } else if (Location.MidnightSun) {
+                    sunStatus = "Midnight Sun!";
+                } else {
+                    sunStatus = "Sunrise: " + @Location.SunRise + " Sunset: " + @Location.SunSet;
+                }
+            }
+            @sunStatus
+        </p>
+        }
+
+        if (Location.ForecastPeriods == null)
+        {
+            //No result to display. Do nothing
+        }
+        else if (Location.ForecastPeriods.Count > 0)
+        {
+            <table border="0">
+                <tr>
+                    <th align="left">Time&nbsp;</th>
+                    <th>&nbsp;Wind speed&nbsp;</th>
+                    <th>&nbsp;Temp&nbsp;</th>
+                    <th>&nbsp;Wind chill&nbsp;</th>
+                    <th>&nbsp;Forecast&nbsp;</th>
+                </tr>
+                @foreach (var period in Location.ForecastPeriods)
+                {
+                    <tr>
+                        <td align="left">@period.PeriodStart.DayOfWeek@Html.Raw(" ")@period.PeriodStart.ToString("d MMM HH:mm" + "-")@period.PeriodEnd.ToString("HH:mm")</td>
+                        <td align="center">@period.ForecastWindSpeed</td>
+                        <td align="center">@period.ForecastTemperature</td>
+                        <td align="center">@Math.Round(13.126665f + 0.6215f * period.ForecastTemperature - 13.924748f * Math.Pow(period.ForecastWindSpeed, 0.16f) + 0.4875195f * period.ForecastTemperature * Math.Pow(period.ForecastWindSpeed, 0.16f), 1)</td>
+                        <td align="center"><img src="http://symbol.yr.no/grafikk/sym/b30/@period.SymbolString@Html.Raw(".png")" alt="@period.Forecast" title="@period.Forecast" /></td>
+                    </tr>
+                }
+            </table>
+            <br />
+            <a href="@Location.CreditUrl">@Location.CreditText</a>
+        }
+        else
+        {
+            <p>No flyable hours</p>
+        }
+
+    }
 </div>
