@@ -1,4 +1,5 @@
 ﻿@using FlyableHours.Data;
+@using FlyableHours.Helpers;
 @{
     ViewBag.Title = "Slopes";
 }
@@ -27,7 +28,7 @@
                                     <td align="center">@period.ForecastWindSpeed</td>
                                     <td align="center">@period.ForecastWindDirectionString (@Math.Round(period.ForecastWindDirectionDeg,0))</td>
                                     <td align="center">@period.ForecastTemperature</td>
-                                    <td align="center">@Math.Round(13.126665f + 0.6215f * period.ForecastTemperature - 13.924748f * Math.Pow(period.ForecastWindSpeed, 0.16f) + 0.4875195f * period.ForecastTemperature * Math.Pow(period.ForecastWindSpeed, 0.16f), 1)</td>
+                                    <td align="center">@WeatherHelper.CalculateWindChill(period.ForecastTemperature, period.ForecastWindSpeed)</td>
                                     <td align="center"><img src="http://symbol.yr.no/grafikk/sym/b30/@period.SymbolString@Html.Raw(".png")" alt="@period.Forecast" title="@period.Forecast"/></td>
                                 </tr>
                             }

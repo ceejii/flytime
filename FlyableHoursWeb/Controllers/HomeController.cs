@@ -19,7 +19,14 @@ namespace FlyableHoursWeb.Controllers
         [HttpGet]
         public ActionResult Index(string URL = "", string windspeed = "5", string minTemp = "-5", bool includeFog=true)
         {
+            var site = new FlyingSite();
             Console.WriteLine("URL:" + URL);
+            if (URL == "")
+            {
+                ViewBag.Title = "Search";
+                ViewBag.Result = new List<FlyingSite>() { site };
+                return View();
+            }
             Console.WriteLine("Wind speed:" + windspeed);
             var parser = new YrXmlParser(URL);
             try
@@ -37,12 +44,14 @@ namespace FlyableHoursWeb.Controllers
             catch (Exception)
             {
                 //throw;
+                ViewBag.Title = "Error";
                 return View();
             }
-            var site = new FlyingSite();
             parser.findFlyableHours(site, out site);
             ViewBag.LocationName = site.ForecastLocationName;
-            return View(new List<FlyingSite>(){site});
+            ViewBag.Result = new List<FlyingSite>(){site};
+            //return new RedirectResult(Url.Action("Index") + "#Result");
+            return View();
         }
 
         public ActionResult About()

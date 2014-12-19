@@ -63,6 +63,7 @@
     <Compile Include="Data\FlyingSite.cs" />
     <Compile Include="Data\ForecastPeriod.cs" />
     <Compile Include="GmailMailService.cs" />
+    <Compile Include="Helpers\WeatherHelper.cs" />
     <Compile Include="XmlSnapshot.cs" />
     <Compile Include="YrXmlParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

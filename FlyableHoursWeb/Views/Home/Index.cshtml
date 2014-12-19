@@ -1,4 +1,5 @@
 ﻿@using FlyableHours.Data;
+@using FlyableHours.Helpers;
 @{
     if (ViewBag.LocationName != null && !ViewBag.LocationName.Equals(""))
     {
@@ -16,28 +17,10 @@
 </div>
 
 <div class="row">
-    Paste or type a link to a forecast overview page from the web-version of <a href="http://www.yr.no">yr.no</a> 
-    @using (Html.BeginForm("Index", "Home", FormMethod.Get))
-    {
-        @Html.Label("URL ");<text> </text>
-        @Html.TextBox("URL", null, new { @style = "width: 400px; max-width: 400px;" });
-        <text>For example: <a href="http://www.yr.no/place/Sweden/Stockholm/Västberga/">http://www.yr.no/place/Sweden/Stockholm/Västberga/</a> </text>  <br/>
-        @Html.Label("Max windspeed (meter/sec) ");<text> </text>
-        @Html.TextBox("windspeed","4.0");
-       <text>For example: 4.0 or just 4</text>   <br />
-        @Html.Label("Min temperature (Celsius) ");<text> </text>
-        @Html.TextBox("minTemp","-5");
-        <text>For example: 4.0 or just 4</text>   <br />
-        @Html.Label("Include foggy periods ");<text> </text>
-        @Html.CheckBox("includeFog", true);       <br />
-        <button type="submit" formmethod="get">Submit</button>
-    }
-
-    @foreach (var Location in Model)
+    @foreach (var Location in ViewBag.Result)
     {
         if (Location.ForecastPeriods != null)
         {
-            <hr />
             <p>
                 <h2>
                     Forecast for <a href="@Location.ForecastUrl@Html.Raw("hour_by_hour.html")">@Location.ForecastLocationName</a>
@@ -78,7 +61,7 @@
                         <td align="left">@period.PeriodStart.DayOfWeek@Html.Raw(" ")@period.PeriodStart.ToString("d MMM HH:mm" + "-")@period.PeriodEnd.ToString("HH:mm")</td>
                         <td align="center">@period.ForecastWindSpeed</td>
                         <td align="center">@period.ForecastTemperature</td>
-                        <td align="center">@Math.Round(13.126665f + 0.6215f * period.ForecastTemperature - 13.924748f * Math.Pow(period.ForecastWindSpeed, 0.16f) + 0.4875195f * period.ForecastTemperature * Math.Pow(period.ForecastWindSpeed, 0.16f), 1)</td>
+                        <td align="center">@WeatherHelper.CalculateWindChill(period.ForecastTemperature, period.ForecastWindSpeed)</td>
                         <td align="center"><img src="http://symbol.yr.no/grafikk/sym/b30/@period.SymbolString@Html.Raw(".png")" alt="@period.Forecast" title="@period.Forecast" /></td>
                     </tr>
                 }
@@ -92,4 +75,24 @@
         }
 
     }
+</div>
+<div class="row">
+    <hr />
+    Paste or type a link to a forecast overview page from the web-version of <a href="http://www.yr.no">yr.no</a>
+    @using (Html.BeginForm("Index", "Home", FormMethod.Get))
+    {
+        @Html.Label("URL ");<text> </text>
+        @Html.TextBox("URL", null, new { @style = "width: 400px; max-width: 400px;" });
+        <text>For example: <a href="http://www.yr.no/place/Sweden/Stockholm/Västberga/">http://www.yr.no/place/Sweden/Stockholm/Västberga/</a> </text>  <br />
+        @Html.Label("Max windspeed (meter/sec) ");<text> </text>
+        @Html.TextBox("windspeed", "4.0");
+        <text>For example: 4.0 or just 4</text>   <br />
+        @Html.Label("Min temperature (Celsius) ");<text> </text>
+        @Html.TextBox("minTemp", "-5");
+        <text>For example: 4.0 or just 4</text>   <br />
+        @Html.Label("Include foggy periods ");<text> </text>
+        @Html.CheckBox("includeFog", true);       <br />
+        <button type="submit" formmethod="get">Submit</button>
+    }
+
 </div>
